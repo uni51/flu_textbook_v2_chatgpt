@@ -35,14 +35,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _apiText = '';
+  String? _apiText;
   final apiKey = dotenv.get('CHATGPT_API_KEY');
+  String searchText = '';
 
   @override
   void initState() {
     super.initState();
-    
-    callApi();
+
+    // callApi();
   }
 
   @override
@@ -59,12 +60,35 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  '$_apiText',
-                  style: TextStyle(
-                    fontSize: 14,
-                  ),
+                child: Builder(builder: (context) {
+                  final text = _apiText;
+
+                  if (text == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return Text(
+                    text,
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                  );
+                }),
+              ),
+              TextField(
+                decoration: const InputDecoration(
+                  hintText: '検索したいテキスト',
                 ),
+                onChanged: (text) {
+                  searchText = text;
+                },
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 検索
+                  callApi();
+                },
+                child: const Text('検索'),
               ),
             ],
           ),
@@ -75,17 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void callApi() async {
     final response = await http.post(
-        Uri.parse('https://api.openai.com/v1/chat/completions'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $apiKey',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'model': 'gpt-3.5-turbo',
-          'messages': [
-            {'role': 'user', 'content': 'お薦めのスパゲティを3つ教えてください。',},
-          ]
-        }),
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {"role": "user", "content": searchText}
+        ]
+      }),
     );
     final body = response.bodyBytes;
     final jsonString = utf8.decode(body);
