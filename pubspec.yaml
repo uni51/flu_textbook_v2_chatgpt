@@ -34,6 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^1.1.0
   flutter_dotenv: ^5.1.0
+  chat_gpt_sdk: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -60,7 +61,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - .env
-     # - images/a_dot_burr.jpeg
+    - assets/images/openai.png
      # - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

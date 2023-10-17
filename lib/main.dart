@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
   int selectedIndex = 0;
 
   // 切り替える画面のリスト
-  List<Widget> display = [const SingleChat(), const ListChat()];
+  List<Widget> display = [const SingleChat(), const ListChat(title: 'Chat List')];
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +40,9 @@ class _HomeState extends State<Home> {
         body: display[selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'ホーム'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Single Chat'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.notifications_none), label: 'お知らせ'),
+                icon: Icon(Icons.notifications_none), label: 'List Chat'),
           ],
           // 現在選択されているフッターメニューのインデックス
           currentIndex: selectedIndex,
