@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Message {
-  const Message(
-      this.message,
-      this.sendTime, {
-        required this.fromChatGpt
-      });
+  const Message(this.message, this.sendTime, {required this.fromChatGpt});
 
   final String message;
   final bool fromChatGpt;
@@ -34,7 +30,7 @@ class _ListChatState extends State<ListChat> {
   );
 
   final _textEditingController = TextEditingController(
-    text: 'What is Flutter?',
+    text: '検索したいテキスト',
   );
   final _scrollController = ScrollController();
 
@@ -48,17 +44,11 @@ class _ListChatState extends State<ListChat> {
   static Color colorAvatar = Color.fromARGB(0xFF, 0x76, 0x5a, 0x44);
   static Color colorInput = Color.fromARGB(0xFF, 0xf5, 0xf5, 0xf5);
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -87,19 +77,19 @@ class _ListChatState extends State<ListChat> {
                                       backgroundColor: colorAvatar,
                                       child: Padding(
                                         padding: const EdgeInsets.all(4.0),
-                                        child:
-                                        Image.asset('assets/images/openai.png'),
+                                        child: Image.asset(
+                                            'assets/images/openai.png'),
                                       ))),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                if(!message.fromChatGpt)
+                                if (!message.fromChatGpt)
                                   Text(_formatDateTime(message.sendTime)),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
-                                    constraints:
-                                    BoxConstraints(maxWidth: deviceWidth * 0.7),
+                                    constraints: BoxConstraints(
+                                        maxWidth: deviceWidth * 0.7),
                                     decoration: BoxDecoration(
                                       color: message.fromChatGpt
                                           ? colorOthersMessage
@@ -111,13 +101,13 @@ class _ListChatState extends State<ListChat> {
                                       child: showLoadingIcon
                                           ? const CircularProgressIndicator()
                                           : Text(
-                                        message.message,
-                                        style: TextStyle(fontSize: 16),
-                                      ),
+                                              message.message,
+                                              style: TextStyle(fontSize: 16),
+                                            ),
                                     ),
                                   ),
                                 ),
-                                if(message.fromChatGpt)
+                                if (message.fromChatGpt)
                                   Text(_formatDateTime(message.sendTime)),
                               ],
                             ),
@@ -129,20 +119,22 @@ class _ListChatState extends State<ListChat> {
               children: [
                 Expanded(
                     child: TextField(
-                      style: TextStyle(fontSize: 14),
-                      controller: _textEditingController,
-                      decoration: InputDecoration(
-                        fillColor: colorInput,
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(32),),),
-                    )),
+                  style: TextStyle(fontSize: 14),
+                  controller: _textEditingController,
+                  decoration: InputDecoration(
+                    fillColor: colorInput,
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                  ),
+                )),
                 IconButton(
                     onPressed: _isLoading
                         ? null
                         : () async {
-                      _onTapSend(_textEditingController.text);
-                    },
+                            _onTapSend(_textEditingController.text);
+                          },
                     icon: Icon(
                       Icons.send,
                       color: _isLoading ? Colors.grey : Colors.black,
@@ -158,7 +150,6 @@ class _ListChatState extends State<ListChat> {
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
-
 
   void _onTapSend(String userMessage) {
     setState(() {
@@ -191,7 +182,7 @@ class _ListChatState extends State<ListChat> {
     return response!.choices.first.text;
   }
 
-  void _scrollDown(){
+  void _scrollDown() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.animateTo(_scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 500),
