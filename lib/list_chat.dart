@@ -37,10 +37,8 @@ class _ListChatState extends State<ListChat> {
   bool _isLoading = false;
   final _messages = <Message>[];
 
-  static Color colorBackground = Color.fromARGB(0xFF, 0x90, 0xac, 0xd7);
   static Color colorMyMessage = Color.fromARGB(0xFF, 0x8a, 0xe1, 0x7e);
   static Color colorOthersMessage = Color.fromARGB(0xFF, 0xff, 0xff, 0xff);
-  static Color colorTime = Color.fromARGB(0xFF, 0x72, 0x88, 0xa8);
   static Color colorAvatar = Color.fromARGB(0xFF, 0x76, 0x5a, 0x44);
   static Color colorInput = Color.fromARGB(0xFF, 0xf5, 0xf5, 0xf5);
 
