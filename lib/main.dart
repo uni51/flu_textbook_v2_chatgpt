@@ -1,123 +1,75 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:gpt/list_chat.dart';
+import 'package:gpt/single_chat.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future main() async {
-  await dotenv.load(fileName: '.env');
-  runApp(const MyApp());
+void main() async {
+  await dotenv.load();
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      title: 'Chat Gpt Demo',
+      home: Home(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Home> createState() => _HomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String? _apiText;
-  final apiKey = dotenv.get('CHATGPT_API_KEY');
-  String searchText = '';
+class _HomeState extends State<Home> {
+  // 選択中フッターメニューのインデックスを一時保存する用変数
+  int selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
+  static const String singleChatTitle = 'Single Chat';
+  static const String listChatTitle = 'List Chat';
 
-    // callApi();
+  // 切り替える画面のリスト
+  List<Widget> display = [
+    const SingleChat(
+      title: singleChatTitle,
+    ),
+    const ListChat(title: listChatTitle)
+  ];
+
+  String get appBarTitle {
+    return selectedIndex == 0 ? singleChatTitle : listChatTitle;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Builder(builder: (context) {
-                  final text = _apiText;
-
-                  if (text == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  return Text(
-                    text,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  );
-                }),
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                  hintText: '検索したいテキスト',
-                ),
-                onChanged: (text) {
-                  searchText = text;
-                },
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // 検索
-                  callApi();
-                },
-                child: const Text('検索'),
-              ),
-            ],
-          ),
+        appBar: AppBar(
+          title: Text(appBarTitle), // AppBarにタイトルを追加
         ),
-      ),
-    );
-  }
-
-  void callApi() async {
-    final response = await http.post(
-      Uri.parse('https://api.openai.com/v1/chat/completions'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $apiKey',
-      },
-      body: jsonEncode(<String, dynamic>{
-        'model': 'gpt-3.5-turbo',
-        'messages': [
-          {"role": "user", "content": searchText}
-        ]
-      }),
-    );
-    final body = response.bodyBytes;
-    final jsonString = utf8.decode(body);
-    final json = jsonDecode(jsonString);
-    final content = json['choices'][0]['message']['content'];
-
-    setState(() {
-      _apiText = content;
-    });
+        body: display[selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home), label: singleChatTitle),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.notifications_none), label: listChatTitle),
+          ],
+          // 現在選択されているフッターメニューのインデックス
+          currentIndex: selectedIndex,
+          // フッター領域の影
+          elevation: 0,
+          // フッターメニュータップ時の処理
+          onTap: (int index) {
+            selectedIndex = index;
+            setState(() {});
+          },
+          // 選択中フッターメニューの色
+          fixedColor: Colors.red,
+        ));
   }
 }
