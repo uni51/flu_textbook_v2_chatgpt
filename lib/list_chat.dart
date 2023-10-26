@@ -70,7 +70,8 @@ class _ListChatState extends State<ListChat> {
                           children: [
                             if (message.fromChatGpt)
                               SizedBox(
-                                  width: deviceWidth * 0.1,
+                                  // width: deviceWidth * 0.1,
+                                  width: 40,
                                   child: CircleAvatar(
                                       backgroundColor: colorAvatar,
                                       child: Padding(
@@ -149,7 +150,7 @@ class _ListChatState extends State<ListChat> {
     return '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  void _onTapSend(String userMessage) {
+  Future<void> _onTapSend(String userMessage) async {
     setState(() {
       _isLoading = true;
       _messages.addAll([
@@ -159,25 +160,35 @@ class _ListChatState extends State<ListChat> {
       _scrollDown();
     });
 
-    _sendMessage(userMessage).then((chatGptMessage) {
+    try {
+      final chatGptMessage = await _sendMessage(userMessage);
       setState(() {
         _messages.last =
             Message(chatGptMessage.trim(), DateTime.now(), fromChatGpt: true);
         _isLoading = false;
       });
       _scrollDown();
-    });
+    } catch (error) {
+      print("Error sending message: $error");
+      // エラー処理を追加する場合はここに記述
+    }
   }
 
   Future<String> _sendMessage(String message) async {
-    final request = CompleteText(
-      prompt: message,
-      model: TextDavinci3Model(),
-      maxTokens: 200,
-    );
+    try {
+      final request = CompleteText(
+        prompt: message,
+        model: TextDavinci3Model(),
+        maxTokens: 200,
+      );
 
-    final response = await openAI.onCompletion(request: request);
-    return response!.choices.first.text;
+      final response = await openAI.onCompletion(request: request);
+      return response!.choices.first.text;
+    } catch (error) {
+      print("Error sending message: $error");
+      // エラー処理を追加する場合はここに記述
+      rethrow;
+    }
   }
 
   void _scrollDown() {
